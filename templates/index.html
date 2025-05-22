@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Study Plan</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>Machine Learning Engineering</h1>
+            <h2>Study Plan</h2>
+
+            <form method="GET" action="/">
+                <label for="month">Filter by Month:</label>
+                <select name="month" id="month">
+                    <option value="">-- All --</option>
+                    <option value="January">June</option>
+                    <option value="February">June</option>
+                    <option value="March">June</option>
+                    <option value="April">June</option>
+                    <option value="May">June</option>
+                    <option value="June">June</option>
+                    <option value="July">June</option>
+                    <option value="August">June</option>
+                    <option value="September">June</option>
+                    <option value="October">June</option>
+                    <option value="November">June</option>
+                    <option value="December">July</option>
+                </select>
+
+                <label for="week">or Week:</label>
+                <input type="number" name="week" id="week" min="1">
+
+                <button type="submit">Filter</button>
+            </form>
+
+            <h2>Results</h2>
+            <table>
+                <tr>
+                    <th>Month</th>
+                    <th>Week</th>
+                    <th>Topic</th>
+                    <th>Details</th>
+                    <th>Completed</th>
+                </tr>
+                {% for row in results %}
+                    <tr>
+                        <td>{{ row['month'] }}</td>
+                        <td>{{ row['week'] }}</td>
+                        <td>{{ row['topic'] }}</td>
+                        <td>{{ row['details'] or '' }}</td>
+                        <td>{{ '✅' if row['is_completed'] else '❌' }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <h2>Add New Study Plan Entry</h2>
+            <form method="POST">
+                <label>Month:
+                    <input type="text" name="month" required>
+                </label><br>
+                <label>Week:
+                    <input type="number" name="week" required>
+                </label><br>
+                <label>Topic:
+                    <input type="text" name="topic" required>
+                </label><br>
+                <label>Details:
+                    <input type="text" name="details">
+                </label><br>
+                <button type="submit">Add Entry</button>
+            </form>
+        </div>
+    </body>
+</html>
