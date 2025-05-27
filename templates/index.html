@@ -5,72 +5,51 @@
         <title>Study Plan</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
-
     <body>
         <div class="container">
-            <h1>Machine Learning Engineering</h1>
-            <h2>Study Plan</h2>
+            <h1>Generate Study Plan</h1>
 
-            <form method="GET" action="/">
-                <label for="month">Filter by Month:</label>
-                <select name="month" id="month">
-                    <option value="">-- All --</option>
-                    <option value="January">June</option>
-                    <option value="February">June</option>
-                    <option value="March">June</option>
-                    <option value="April">June</option>
-                    <option value="May">June</option>
-                    <option value="June">June</option>
-                    <option value="July">June</option>
-                    <option value="August">June</option>
-                    <option value="September">June</option>
-                    <option value="October">June</option>
-                    <option value="November">June</option>
-                    <option value="December">July</option>
-                </select>
+            <form method="POST"
+                  action="{% if results %}{{ url_for('clear') }}{% else %}{{ url_for('index') }}{% endif %}">
+                <fieldset>
+                    <legend>Select field(s):</legend>
+                    {% for id, title in fields %}
+                        <label>
+                            <input type="checkbox" name="fields" value="{{ id }}"
+                                   {% if results %}disabled{% endif %}>
+                            {{ title }}
+                        </label><br>
+                    {% endfor %}
+                </fieldset>
 
-                <label for="week">or Week:</label>
-                <input type="number" name="week" id="week" min="1">
-
-                <button type="submit">Filter</button>
+                <button type="submit">
+                    {% if results %}Clear{% else %}Generate Plan{% endif %}
+                </button>
             </form>
 
-            <h2>Results</h2>
-            <table>
-                <tr>
-                    <th>Month</th>
-                    <th>Week</th>
-                    <th>Topic</th>
-                    <th>Details</th>
-                    <th>Completed</th>
-                </tr>
-                {% for row in results %}
-                    <tr>
-                        <td>{{ row['month'] }}</td>
-                        <td>{{ row['week'] }}</td>
-                        <td>{{ row['topic'] }}</td>
-                        <td>{{ row['details'] or '' }}</td>
-                        <td>{{ '✅' if row['is_completed'] else '❌' }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
 
-            <h2>Add New Study Plan Entry</h2>
-            <form method="POST">
-                <label>Month:
-                    <input type="text" name="month" required>
-                </label><br>
-                <label>Week:
-                    <input type="number" name="week" required>
-                </label><br>
-                <label>Topic:
-                    <input type="text" name="topic" required>
-                </label><br>
-                <label>Details:
-                    <input type="text" name="details">
-                </label><br>
-                <button type="submit">Add Entry</button>
-            </form>
+
+            {% if results %}
+                <h2>Recommended Courses</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Weeks</th>
+                            <th>Relevance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for title, weeks, relevance in results %}
+                            <tr>
+                                <td>{{ title }}</td>
+                                <td>{{ weeks }}</td>
+                                <td>{{ relevance }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         </div>
     </body>
 </html>

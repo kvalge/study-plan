@@ -1,33 +1,54 @@
-from flask import Flask, render_template, request
-import sqlite3
+from flask import Flask, render_template, request, redirect, url_for, session
+from db.config import get_connection
+
 app = Flask(__name__)
+app.secret_key = 'your-secret-key'  # vajalik sessioni kasutamiseks
 
-def get_db_connection():
-    conn = sqlite3.connect('studyplan.db')
-    conn.row_factory = sqlite3.Row  # lubab kasutada dict-stiilis viitamist
-    return conn
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    month = request.args.get('month')
-    week = request.args.get('week')
+    conn = get_connection()
+    c = conn.cursor()
 
-    query = 'SELECT * FROM study_plan WHERE 1=1'
-    params = []
+    c.execute("SELECT id, title FROM field")
+    fields = c.fetchall()
 
-    if month:
-        query += ' AND month = ?'
-        params.append(month)
+    results = []
 
-    if week:
-        query += ' AND week = ?'
-        params.append(int(week))
+    if request.method == 'POST':
+        selected_field_ids = request.form.getlist('fields')
 
-    conn = get_db_connection()
-    rows = conn.execute(query, params).fetchall()
+        if selected_field_ids:
+            session['selected_field_ids'] = selected_field_ids  # salvesta sessiooni
+            return redirect(url_for('index'))  # PRG – redirect GET-ile
+
+    selected_field_ids = session.get('selected_field_ids')
+
+    if selected_field_ids:
+        placeholders = ','.join('?' for _ in selected_field_ids)
+
+        query = f'''
+            SELECT course.title, 
+                   MAX(field_course.weeks) as max_weeks,
+                   MAX(field_course.relevance) as max_relevance
+            FROM field_course
+            JOIN course ON course.id = field_course.course_id
+            WHERE field_course.field_id IN ({placeholders})
+            GROUP BY course.title
+            ORDER BY max_relevance DESC
+        '''
+        c.execute(query, selected_field_ids)
+        results = c.fetchall()
+
     conn.close()
+    return render_template('index.html', fields=fields, results=results)
 
-    return render_template('index.html', results=rows)
+
+@app.route('/clear', methods=['POST'])
+def clear():
+    session.pop('selected_field_ids', None)
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,6 +1,6 @@
 html, body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 body {
@@ -20,23 +20,32 @@ body {
     box-sizing: border-box;
 }
 
+button {
+    font-size: 25px;
+    color: ghostwhite;
+    background-color: navy;
+    margin: 15px;
+    padding: 10px;
+    border: navy;
+    border-radius: 3px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
 }
 
 th, td {
-    border: 1px solid #ccc;
-    padding: 8px 12px;
+    padding: 10px;
     text-align: left;
 }
 
-th {
-    background-color: #12129e;
-    color: white;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9;
+h1, h2{
+    text-align: center;
+    color: navy;
 }
