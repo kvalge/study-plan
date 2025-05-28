@@ -11,7 +11,8 @@ def initialize_db():
     c.execute('''
         CREATE TABLE course (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL UNIQUE
+            title TEXT NOT NULL UNIQUE,
+            level TEXT NOT NULL
         )
     ''')
 

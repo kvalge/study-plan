@@ -1,33 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="UTF-8"/>
         <title>Study Plan</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
     </head>
     <body>
         <div class="container">
-            <h1>Generate Study Plan</h1>
+            <h1>Create Study Plan</h1>
 
             <form method="POST"
                   action="{% if results %}{{ url_for('clear') }}{% else %}{{ url_for('index') }}{% endif %}">
                 <fieldset>
                     <legend>Select field(s):</legend>
+
+                    <label>
+                        <input type="checkbox" id="select-all" {% if results %}disabled{% endif %}/>
+                        Select All
+                    </label>
+                    <br/>
+
                     {% for id, title in fields %}
                         <label>
-                            <input type="checkbox" name="fields" value="{{ id }}"
-                                   {% if results %}disabled{% endif %}>
+                            <input type="checkbox" name="fields" value="{{ id }}" class="field-checkbox"
+                                   {% if results %}disabled{% endif %}
+                                   {% if selected_field_ids and (id|string) in selected_field_ids %}checked{% endif %}/>
                             {{ title }}
-                        </label><br>
+                        </label><br/>
                     {% endfor %}
                 </fieldset>
 
+                <fieldset>
+                    <legend>Filter by Level:</legend>
+                    <label>
+                        <input type="checkbox" name="levels" value="Beginner" class="level-checkbox"
+                               {% if results %}disabled{% endif %}
+                               {% if selected_levels and 'Beginner' in selected_levels %}checked{% endif %}/>
+                        Beginner
+                    </label><br/>
+                    <label>
+                        <input type="checkbox" name="levels" value="Intermediate" class="level-checkbox"
+                               {% if results %}disabled{% endif %}
+                               {% if selected_levels and 'Intermediate' in selected_levels %}checked{% endif %}/>
+                        Intermediate
+                    </label><br/>
+                    <label>
+                        <input type="checkbox" name="levels" value="Advanced" class="level-checkbox"
+                               {% if results %}disabled{% endif %}
+                               {% if selected_levels and 'Advanced' in selected_levels %}checked{% endif %}/>
+                        Advanced
+                    </label><br/>
+                </fieldset>
+
                 <button type="submit">
-                    {% if results %}Clear{% else %}Generate Plan{% endif %}
+                    {% if results %}Clear{% else %}Generate{% endif %}
                 </button>
             </form>
-
-
 
             {% if results %}
                 <h2>Recommended Courses</h2>
@@ -35,21 +63,52 @@
                     <thead>
                         <tr>
                             <th>Course</th>
+                            <th>Level</th>
                             <th>Weeks</th>
                             <th>Relevance</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for title, weeks, relevance in results %}
+                        {% for title, level, weeks, relevance in results %}
                             <tr>
                                 <td>{{ title }}</td>
+                                <td>{{ level }}</td>
                                 <td>{{ weeks }}</td>
                                 <td>{{ relevance }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
+
+                <div class="total-weeks-box">
+                    Total Weeks: {{ total_weeks }}
+                </div>
             {% endif %}
+
+            <script>
+                const selectAll = document.getElementById("select-all");
+                const fieldCheckboxes = document.querySelectorAll(".field-checkbox");
+
+                if (selectAll && fieldCheckboxes.length > 0) {
+                    selectAll.addEventListener("change", () => {
+                        fieldCheckboxes.forEach(cb => {
+                            if (!cb.disabled) {
+                                cb.checked = selectAll.checked;
+                            }
+                        });
+                    });
+
+                    fieldCheckboxes.forEach(cb => {
+                        cb.addEventListener("change", () => {
+                            if (!cb.disabled) {
+                                selectAll.checked = [...fieldCheckboxes].every(cb => cb.checked);
+                            }
+                        });
+                    });
+
+                    selectAll.checked = [...fieldCheckboxes].every(cb => cb.checked);
+                }
+            </script>
         </div>
     </body>
 </html>

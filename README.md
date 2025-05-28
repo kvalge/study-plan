@@ -1,14 +1,13 @@
 # Study Plan Web App
 
-Flask web application that displays courses according to the field. The app uses SQLite as a backend database and is deployed on PythonAnywhere.  
+A Flask web application that displays courses based on selected fields and levels. Uses SQLite as the database and is hosted on PythonAnywhere.
 
 ## Features
 
-- Select field(s) to see the courses required to work in those field(s).  
-- Simple design with static CSS.  
-- Uses SQLite for data storage.  
+- Select multiple fields and filter courses by level (Beginner, Intermediate, Advanced).  
+- Results sorted by relevance and level.  
 
-## Technologies Used
+## Technologies
 
 - Python
 - Flask
