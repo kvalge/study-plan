@@ -84,31 +84,100 @@
                     Total Weeks: {{ total_weeks }}
                 </div>
             {% endif %}
-
-            <script>
-                const selectAll = document.getElementById("select-all");
-                const fieldCheckboxes = document.querySelectorAll(".field-checkbox");
-
-                if (selectAll && fieldCheckboxes.length > 0) {
-                    selectAll.addEventListener("change", () => {
-                        fieldCheckboxes.forEach(cb => {
-                            if (!cb.disabled) {
-                                cb.checked = selectAll.checked;
-                            }
-                        });
-                    });
-
-                    fieldCheckboxes.forEach(cb => {
-                        cb.addEventListener("change", () => {
-                            if (!cb.disabled) {
-                                selectAll.checked = [...fieldCheckboxes].every(cb => cb.checked);
-                            }
-                        });
-                    });
-
-                    selectAll.checked = [...fieldCheckboxes].every(cb => cb.checked);
-                }
-            </script>
         </div>
+
+        <div id="bot">
+            🤖 <span id="bot-msg">Hello</span>
+        </div>
+
+        <script>
+            const BOT_MESSAGES = [
+                "Learning... please wait ⏳",
+                "Meow! Just kidding, I'm a bot.",
+                "Mission: Not Impossible.",
+                "You're 1% closer to genius."
+            ];
+            const CLICK_MESSAGES = [
+                "Nice try...",
+                "Well, that was productive.",
+                "That’s one way to learn... I guess",
+                "That click just changed everything..."
+            ];
+            const MESSAGE_INTERVAL = 4000;
+            const CLICK_MESSAGE_DURATION = 1000;
+
+            const bot = document.getElementById("bot");
+            const botMsg = document.getElementById("bot-msg");
+            const selectAll = document.getElementById("select-all");
+            const form = document.querySelector('form');
+
+            let messageIndex = 0;
+            let clickMessageIndex = 0;
+            let intervalId = null;
+            let clickTimeoutId = null;
+
+            function showNextMessage() {
+                botMsg.textContent = BOT_MESSAGES[messageIndex];
+                messageIndex = (messageIndex + 1) % BOT_MESSAGES.length;
+            }
+
+            function startInterval() {
+                intervalId = setInterval(showNextMessage, MESSAGE_INTERVAL);
+            }
+
+            function stopInterval() {
+                clearInterval(intervalId);
+            }
+
+            function showHelloOnce() {
+                if (!sessionStorage.getItem('helloSeen')) {
+                    botMsg.textContent = "Hello";
+                    sessionStorage.setItem('helloSeen', 'true');
+                } else {
+                    showNextMessage();
+                }
+            }
+
+            if (form) {
+                form.addEventListener('change', (event) => {
+                    if (event.target.id === 'select-all') {
+                        const checkboxes = form.querySelectorAll('.field-checkbox:not([disabled])');
+                        checkboxes.forEach(cb => cb.checked = event.target.checked);
+                    } else if (event.target.classList.contains('field-checkbox')) {
+                        const checkboxes = form.querySelectorAll('.field-checkbox:not([disabled])');
+                        selectAll.checked = [...checkboxes].every(cb => cb.checked);
+                    }
+                });
+            }
+
+            document.addEventListener("click", (event) => {
+                if (clickTimeoutId !== null) return;
+
+                if (event.target.tagName === 'BUTTON') {
+                    event.preventDefault();
+                }
+
+                stopInterval();
+
+                const oldText = botMsg.textContent;
+                bot.style.transform = "scale(1.2)";
+                botMsg.textContent = CLICK_MESSAGES[clickMessageIndex];
+                clickMessageIndex = (clickMessageIndex + 1) % CLICK_MESSAGES.length;
+
+                clickTimeoutId = setTimeout(() => {
+                    bot.style.transform = "scale(1)";
+                    botMsg.textContent = oldText;
+                    clickTimeoutId = null;
+                    startInterval();
+
+                    if (event.target.tagName === 'BUTTON') {
+                        event.target.closest('form').submit();
+                    }
+                }, CLICK_MESSAGE_DURATION);
+            });
+
+            showHelloOnce();
+            startInterval();
+        </script>
     </body>
 </html>

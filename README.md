@@ -12,6 +12,7 @@ A Flask web application that displays courses based on selected fields and level
 - Python
 - Flask
 - SQLite
+- JavaScript  
 - HTML & CSS
 - Hosted on [PythonAnywhere](https://kaval.pythonanywhere.com/)
 

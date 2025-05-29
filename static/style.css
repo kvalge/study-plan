@@ -67,3 +67,19 @@ h1 {
     font-weight: bold;
     color: ghostwhite;
 }
+
+#bot {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    max-width: 220px;
+    background: navy;
+    color: whitesmoke;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    transition: transform 0.2s ease-in-out;
+    z-index: 1000;
+    word-wrap: break-word;
+    white-space: normal;
+}
